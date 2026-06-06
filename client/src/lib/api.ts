@@ -1,16 +1,21 @@
-import axios from "axios";
-import type { AnalysisResult, StoryResult, User } from "../types/index.js";
+import axios, { type AxiosError } from "axios";
+import type { AnalysisResult, StoryResult, User } from "../types/index";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
 
-// Create axios instance
 const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
 });
 
-// Attach Clerk token to every request
-// Call this once after Clerk loads in main.tsx
+// Intercept errors so response data is always accessible
+api.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    return Promise.reject(error);
+  }
+);
+
 export const setAuthToken = (token: string | null) => {
   if (token) {
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -19,7 +24,6 @@ export const setAuthToken = (token: string | null) => {
   }
 };
 
-// Issues
 export const analyzeRepo = async (
   repo: string,
   refresh = false
@@ -30,7 +34,6 @@ export const analyzeRepo = async (
   return data;
 };
 
-// Commits
 export const fetchCommitStory = async (
   repo: string,
   refresh = false
@@ -41,7 +44,6 @@ export const fetchCommitStory = async (
   return data;
 };
 
-// User
 export const syncUser = async (payload: {
   email: string;
   username: string;
