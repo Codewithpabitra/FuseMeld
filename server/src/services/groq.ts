@@ -2,14 +2,26 @@ import Groq from "groq-sdk";
 import type { GitHubIssue } from "./octokit.js";
 import type { GitHubCommit } from "./octokit.js";
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
+// Lazy init — created on first use, after dotenv has loaded
+let client: Groq | null = null;
+
+const getClient = (): Groq => {
+  if (!client) {
+    const apiKey = process.env.GROQ_API_KEY;
+    if (!apiKey) {
+      throw new Error("GROQ_API_KEY is not defined in .env");
+    }
+    client = new Groq({ apiKey });
+  }
+  return client;
+};
 
 // Generate a merge suggestion for a cluster of duplicate issues
 export const generateMergeSuggestion = async (
   issues: GitHubIssue[]
 ): Promise<string> => {
+  const groq = getClient();
+
   const issueList = issues
     .map((i) => `#${i.number}: ${i.title}\n${i.body?.slice(0, 300) ?? ""}`)
     .join("\n\n---\n\n");
@@ -34,7 +46,10 @@ Be direct and practical. No markdown formatting.`;
     temperature: 0.3,
   });
 
-  return response.choices[0]?.message?.content?.trim() ?? "Unable to generate suggestion.";
+  return (
+    response.choices[0]?.message?.content?.trim() ??
+    "Unable to generate suggestion."
+  );
 };
 
 export interface CommitPhase {
@@ -49,7 +64,8 @@ export const generateCommitStory = async (
   commits: GitHubCommit[],
   repoName: string
 ): Promise<CommitPhase[]> => {
-  // Take last 80 commits for the story (most recent activity)
+  const groq = getClient();
+
   const recent = commits.slice(0, 80);
 
   const commitLog = recent
@@ -68,7 +84,7 @@ Format:
 [
   {
     "title": "Short phase title (e.g. Initial Setup, Auth Overhaul, Bug Fix Sprint)",
-    "period": "Date range (e.g. Jan 2024 - Mar 2024)",
+    "period": "Date range (e.g. Jan 2024 – Mar 2024)",
     "commits": ["commit message 1", "commit message 2"],
     "story": "2-3 sentence narrative of what the team was building or fixing during this phase. Make it engaging and human."
   }
@@ -84,7 +100,6 @@ Format:
   const raw = response.choices[0]?.message?.content?.trim() ?? "[]";
 
   try {
-    // Strip any accidental markdown fences
     const clean = raw.replace(/```json|```/g, "").trim();
     return JSON.parse(clean) as CommitPhase[];
   } catch {
