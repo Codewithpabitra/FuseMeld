@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const QUICK_REPOS = [
   "facebook/react",
@@ -87,7 +88,7 @@ export default function Home() {
               onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
               className="flex-1 bg-card border-border"
             />
-            <Button onClick={handleAnalyze} className="sm:w-auto w-full">
+            <Button onClick={handleAnalyze} className="sm:w-auto w-full cursor-pointer">
               Analyze
             </Button>
           </div>
@@ -106,7 +107,7 @@ export default function Home() {
                   setRepo(r);
                   setError("");
                 }}
-                className="text-xs px-3 py-1 rounded-full border border-border bg-muted hover:bg-accent hover:text-accent-foreground transition-colors font-mono"
+                className="text-xs px-3 py-1 rounded-full border border-border bg-muted hover:bg-accent hover:text-accent-foreground transition-colors font-mono cursor-pointer"
               >
                 {r}
               </button>
@@ -130,7 +131,7 @@ export default function Home() {
             {
               icon: "🧠",
               title: "AI merge suggestions",
-              desc: "Groq tells you which issue to keep and why.",
+              desc: "AI tells you which issue to keep and why.",
             },
             {
               icon: "📖",
@@ -153,6 +154,8 @@ export default function Home() {
           ))}
         </motion.div>
       </main>
+
+      <Footer />
     </div>
   );
 }

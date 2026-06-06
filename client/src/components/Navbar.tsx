@@ -43,10 +43,11 @@ export default function Navbar() {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate("/sign-in")}
+                className="cursor-pointer"
               >
                 Sign in
               </Button>
-              <Button size="sm" onClick={() => navigate("/sign-up")}>
+              <Button size="sm" onClick={() => navigate("/sign-up")} className="cursor-pointer">
                 Get started
               </Button>
             </>
