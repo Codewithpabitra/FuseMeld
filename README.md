@@ -5,7 +5,7 @@
 </br>
 
 <div align="center">
-  <img src="./assets/AppLogo.png" alt="FuseMeld Logo" width="40" style="vertical-align: middle;" />
+  <img src="./assets/Applogo.png" alt="FuseMeld Logo" width="40" style="vertical-align: middle;" />
   &nbsp;
   <span style="font-size: 2rem; font-weight: 700; vertical-align: middle;">FuseMeld</span>
 </div>
