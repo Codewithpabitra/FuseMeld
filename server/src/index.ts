@@ -2,10 +2,14 @@ import express, { type Request, type Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 
+import { connectDB } from "./config/db.js";
+
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT ?? 5000;
+
+await connectDB();
 
 app.use(express.json());
 app.use(cors({
