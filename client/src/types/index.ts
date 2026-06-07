@@ -30,6 +30,7 @@ export interface AnalysisResult {
   totalIssues: number;
   clusters: DuplicateCluster[];
   health?: HealthScore;
+  diff?: AnalysisDiff | null;
 }
 
 export interface StoryResult {
@@ -77,4 +78,15 @@ export interface HealthScore {
     clusterSeverity: number;
   };
   summary: string;
+}
+
+// analyze difference 
+export interface AnalysisDiff {
+  hasChanges: boolean;
+  issuesDelta: number;
+  clustersDelta: number;
+  resolvedClusters: number;
+  newClusters: number;
+  avgSimilarityDelta: number;
+  previousAnalyzedAt: string;
 }
