@@ -48,10 +48,13 @@ FuseMeld is a full-stack developer tool that helps open-source maintainers manag
 - 🔍 **Semantic duplicate detection** — Finds similar issues by meaning using `all-MiniLM-L6-v2` embeddings, not just keyword matching
 - 🧠 **AI merge suggestions** — Groq generates actionable recommendations on which issue to keep and how to close the others
 - 📖 **Commit Storyteller** — Transforms raw commit history into a narrative timeline grouped by development phases
+- 💊 **Repo health score** — A 0–100 score calculated from duplicate ratio, issue volume, and cluster severity
+- 📊 **Analysis diff** — Refresh any repo to see exactly what changed since last time — new clusters, resolved duplicates, trend direction
+- 🕐 **Analysis history** — Every repo you analyze is saved automatically, grouped by date, with one-click re-access
+- ⭐ **Saved repos** — Bookmark repos for quick re-analysis from your profile page
 - 💾 **Smart caching** — Analysis results cached in MongoDB for 1 hour to avoid redundant API calls
 - 🔐 **GitHub OAuth** — Secure authentication via Clerk with JWT-protected API routes
-- ⭐ **Saved repos** — Users can bookmark repos for quick re-analysis
-- 📊 **Repo health stats** — At-a-glance metrics: total issues, duplicate clusters, issues in clusters
+- 🌐 **Recently analyzed** — Public feed of the last 5 repos analyzed by any user, shown on the home page
 
 ---
 
@@ -70,6 +73,7 @@ FuseMeld is a full-stack developer tool that helps open-source maintainers manag
 ---
 
 ## 🏗️ Architecture
+
 For a detailed breakdown of request flows, data models, and technical decisions → [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ---
@@ -88,7 +92,7 @@ For a detailed breakdown of request flows, data models, and technical decisions 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/fusemeld.git
+git clone https://github.com/Codewithpabitra/fusemeld.git
 cd fusemeld
 ```
 
@@ -135,7 +139,7 @@ Create `client/.env`:
 
 ```env
 VITE_API_URL=http://localhost:5000
-VITE_CLERK_PUBLISHABLE_KEY=YOUR_CLERK_PUBLISHABLE_KEY
+VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key_here
 ```
 
 Start the frontend:
@@ -177,14 +181,19 @@ fusemeld/
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── ui/                # shadcn components
+│   │   │   ├── AnalysisDiff.tsx
 │   │   │   ├── CommitTimeline.tsx
 │   │   │   ├── DuplicateCluster.tsx
+│   │   │   ├── HealthScore.tsx
 │   │   │   ├── IssueCard.tsx
 │   │   │   ├── Navbar.tsx
 │   │   │   └── RepoStats.tsx
 │   │   ├── pages/
+│   │   │   ├── About.tsx
 │   │   │   ├── Dashboard.tsx
+│   │   │   ├── History.tsx
 │   │   │   ├── Home.tsx
+│   │   │   ├── Profile.tsx
 │   │   │   └── Story.tsx
 │   │   ├── lib/
 │   │   │   └── api.ts
@@ -200,14 +209,18 @@ fusemeld/
     │   │   └── auth.ts
     │   ├── models/
     │   │   ├── Analysis.ts
+    │   │   ├── History.ts
     │   │   └── User.ts
     │   ├── routes/
     │   │   ├── commits.ts
     │   │   ├── issues.ts
+    │   │   ├── public.ts
     │   │   └── user.ts
     │   ├── services/
+    │   │   ├── diff.ts
     │   │   ├── embeddings.ts
     │   │   ├── groq.ts
+    │   │   ├── healthScore.ts
     │   │   ├── octokit.ts
     │   │   └── similarity.ts
     │   └── index.ts
@@ -218,6 +231,12 @@ fusemeld/
 
 ## 🔌 API Reference
 
+### Public (no auth)
+
+```
+GET /api/public/recent           # Last 5 analyzed repos
+```
+
 ### Issues
 
 ```
@@ -225,7 +244,7 @@ GET /api/issues/analyze?repo=owner/repo&refresh=true
 Authorization: Bearer <clerk_jwt>
 ```
 
-Fetches all open issues, embeds them, finds duplicate clusters, and generates AI merge suggestions.
+Fetches all open issues, embeds them, finds duplicate clusters, generates AI merge suggestions, calculates health score, and computes diff against previous analysis.
 
 ### Commits
 
@@ -239,10 +258,12 @@ Fetches recent commits and generates a narrative story grouped into development 
 ### User
 
 ```
-POST /api/user/sync          # Sync Clerk user to MongoDB
-GET  /api/user/me            # Get user profile + saved repos
-POST /api/user/repos/save    # Save a repo
-DEL  /api/user/repos/remove  # Remove a saved repo
+POST /api/user/sync              # Sync Clerk user to MongoDB
+GET  /api/user/me                # Get user profile + saved repos
+GET  /api/user/history           # Get analysis history (last 50)
+DEL  /api/user/history           # Clear all history
+POST /api/user/repos/save        # Save a repo
+DEL  /api/user/repos/remove      # Remove a saved repo
 ```
 
 ---
@@ -267,7 +288,7 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ---
 
-##  Author
+## Author
 
 **Pabitra Maity** - [@Codewithpabitra](https://github.com/Codewithpabitra) · [Portfolio](https://codewithpabitradev.vercel.app)
 
