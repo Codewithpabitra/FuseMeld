@@ -9,6 +9,7 @@ import { embedMany, prepareIssueText } from "../services/embeddings.js";
 import { findSimilarPairs, buildClusters } from "../services/similarity.js";
 import { generateMergeSuggestion } from "../services/groq.js";
 import { calculateHealthScore } from "../services/healthScore.js";
+import { computeDiff } from "../services/diff.js";
 import { Analysis } from "../models/Analysis.js";
 import { History } from "../models/History.js";
 
@@ -32,38 +33,39 @@ router.get(
     try {
       const { owner, repo } = parseRepoUrl(repoInput);
 
+      // Fetch previous analysis before doing anything new (needed for diff)
+      const previousAnalysis = await Analysis.findOne({ owner, repo })
+        .sort({ cachedAt: -1 })
+        .lean();
+
       // Check cache first - skip if ?refresh=true
-      if (refresh !== "true") {
-        const cached = await Analysis.findOne({ owner, repo }).sort({
-          cachedAt: -1,
-        });
-
-        // Cache valid for 1 hour
+      if (refresh !== "true" && previousAnalysis) {
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-
-        if (cached && cached.cachedAt > oneHourAgo) {
+        if (previousAnalysis.cachedAt > oneHourAgo) {
           if (userId) {
             await saveToHistory({
               userId,
               owner,
               repo,
-              totalIssues: cached.totalIssues,
-              clustersFound: cached.clusters.length,
+              totalIssues: previousAnalysis.totalIssues,
+              clustersFound: previousAnalysis.clusters.length,
             });
           }
-          // Recalculate health score from cached data
+
           const health = calculateHealthScore(
-            cached.totalIssues,
-            cached.clusters,
+            previousAnalysis.totalIssues,
+            previousAnalysis.clusters,
           );
+
           res.json({
             source: "cache",
             owner,
             repo,
-            totalIssues: cached.totalIssues,
-            clusters: cached.clusters,
-            commitStory: cached.commitStory,
+            totalIssues: previousAnalysis.totalIssues,
+            clusters: previousAnalysis.clusters,
+            commitStory: previousAnalysis.commitStory,
             health,
+            diff: null,
           });
           return;
         }
@@ -95,6 +97,17 @@ router.get(
         }
         const health = calculateHealthScore(0, []);
 
+        // Compute diff if previous exists
+        const diff = previousAnalysis
+          ? computeDiff(
+              previousAnalysis.clusters,
+              [],
+              previousAnalysis.totalIssues,
+              0,
+              previousAnalysis.cachedAt,
+            )
+          : null;
+
         res.json({
           source: "live",
           owner,
@@ -105,6 +118,7 @@ router.get(
           clusters: [],
           commitStory: [],
           health,
+          diff,
           message: "No open issues found in this repo.",
         });
         return;
@@ -138,6 +152,23 @@ router.get(
       // Calculate health score
       const health = calculateHealthScore(issues.length, clusters);
       console.log(`Health score: ${health.score} — ${health.label}`);
+
+      // Compute diff against previous analysis
+      const diff = previousAnalysis
+        ? computeDiff(
+            previousAnalysis.clusters,
+            clusters,
+            previousAnalysis.totalIssues,
+            issues.length,
+            previousAnalysis.cachedAt,
+          )
+        : null;
+
+      if (diff?.hasChanges) {
+        console.log(
+          `Diff: ${diff.issuesDelta > 0 ? "+" : ""}${diff.issuesDelta} issues, ${diff.clustersDelta > 0 ? "+" : ""}${diff.clustersDelta} clusters`,
+        );
+      }
 
       // Save to MongoDB
       await Analysis.findOneAndUpdate(
@@ -173,6 +204,7 @@ router.get(
         totalIssues: issues.length,
         clusters,
         health,
+        diff,
       });
     } catch (error) {
       const message =
