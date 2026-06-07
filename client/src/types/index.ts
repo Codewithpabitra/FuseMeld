@@ -54,3 +54,14 @@ export interface RecentRepo {
   clustersFound: number;
   analyzedAt: string;
 }
+
+// User History Entry
+export interface HistoryEntry {
+  _id: string;
+  owner: string;
+  repo: string;
+  repoUrl: string;
+  totalIssues: number;
+  clustersFound: number;
+  analyzedAt: string;
+}

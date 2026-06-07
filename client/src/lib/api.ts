@@ -1,5 +1,5 @@
 import axios, { type AxiosError } from "axios";
-import type { AnalysisResult, RecentRepo, StoryResult, User } from "../types/index";
+import type { AnalysisResult, HistoryEntry, RecentRepo, StoryResult, User } from "../types/index";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
 
@@ -77,4 +77,13 @@ export const removeRepo = async (repoUrl: string): Promise<string[]> => {
     { data: { repoUrl } }
   );
   return data.savedRepos;
+};
+
+export const fetchHistory = async (): Promise<HistoryEntry[]> => {
+  const { data } = await api.get<{ history: HistoryEntry[] }>("/api/user/history");
+  return data.history;
+};
+
+export const clearHistory = async (): Promise<void> => {
+  await api.delete("/api/user/history");
 };
