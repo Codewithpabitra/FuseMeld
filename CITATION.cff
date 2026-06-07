@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use FuseMeld in your research or project, please cite it using the metadata below."
+type: software
+
+title: FuseMeld
+abstract: >
+  FuseMeld is an open-source developer tool that uses AI embeddings to detect
+  semantically similar GitHub issues and generates AI-powered merge suggestions.
+  It also narrates a repository's commit history as a human-readable story,
+  helping open-source maintainers manage large repositories more effectively.
+
+version: 1.0.0
+date-released: "2026-06-07"
+license: MIT
+url: "https://fusemeld-git.onrender.com"
+repository-code: "https://github.com/Codewithpabitra/FuseMeld"
+
+authors:
+  - family-names: Maity
+    given-names: Pabitra
+    alias: Codewithpabitra
+    website: "https://codewithpabitradev.vercel.app"
+
+keywords:
+  - open-source
+  - github
+  - duplicate-detection
+  - semantic-search
+  - embeddings
+  - AI
+  - issue-management
+  - developer-tools
+  - MERN
+  - groq Cloud API
+  - Llama 3.3 70B AI Model
