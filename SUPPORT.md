@@ -12,9 +12,11 @@ Open a [Bug Report](https://github.com/Codewithpabitra/FuseMeld/issues/new?templ
 
 Open a [Feature Request](https://github.com/Codewithpabitra/FuseMeld/issues/new?template=feature_request.md) — describe the problem it solves and who it helps.
 
-## ❓ General questions?
+## 💬 General questions?
 
-Use [GitHub Discussions](https://github.com/Codewithpabitra/FuseMeld/discussions) for anything that isn't a bug or feature — setup help, how something works, ideas, feedback.
+Reach out directly on Discord — Username : **pabitramaity.** — for setup help, how something works, ideas, or general feedback.
+
+Alternatively use [GitHub Discussions](https://github.com/Codewithpabitra/FuseMeld/discussions) for public questions that others might benefit from too.
 
 ## 📖 Read the docs first
 
