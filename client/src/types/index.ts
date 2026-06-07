@@ -44,3 +44,13 @@ export interface User {
   username: string;
   savedRepos: string[];
 }
+
+// public recent repos
+export interface RecentRepo {
+  owner: string;
+  repo: string;
+  repoUrl: string;
+  totalIssues: number;
+  clustersFound: number;
+  analyzedAt: string;
+}

@@ -1,5 +1,5 @@
 import axios, { type AxiosError } from "axios";
-import type { AnalysisResult, StoryResult, User } from "../types/index";
+import type { AnalysisResult, RecentRepo, StoryResult, User } from "../types/index";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
 
@@ -22,6 +22,12 @@ export const setAuthToken = (token: string | null) => {
   } else {
     delete api.defaults.headers.common["Authorization"];
   }
+};
+
+// public (no auth)
+export const fetchRecentRepos = async (): Promise<RecentRepo[]> => {
+  const { data } = await api.get<{ recent: RecentRepo[] }>("/api/public/recent");
+  return data.recent;
 };
 
 export const analyzeRepo = async (
