@@ -211,17 +211,32 @@ export default function Home() {
             {
               icon: "⚡",
               title: "Semantic detection",
-              desc: "Finds duplicates by meaning, not just matching words.",
+              desc: "Finds duplicate issues by meaning using AI embeddings — not just keyword matching.",
             },
             {
               icon: "🧠",
               title: "AI merge suggestions",
-              desc: "AI tells you which issue to keep and why.",
+              desc: "Groq's Llama 3.3 70B tells you which issue to keep and how to close the others.",
             },
             {
               icon: "📖",
               title: "Commit storyteller",
-              desc: "Your repo's history narrated as a human story.",
+              desc: "Your repo's commit history narrated as a human story, grouped into development phases.",
+            },
+            {
+              icon: "💊",
+              title: "Repo health score",
+              desc: "A 0–100 score showing how healthy your issue tracker is — updated on every analysis.",
+            },
+            {
+              icon: "📊",
+              title: "Analysis diff",
+              desc: "Refresh anytime to see exactly what changed — new clusters, resolved issues, trend direction.",
+            },
+            {
+              icon: "🕐",
+              title: "Analysis history",
+              desc: "Every repo you've analyzed saved automatically, grouped by date for quick re-access.",
             },
           ].map((f) => (
             <div

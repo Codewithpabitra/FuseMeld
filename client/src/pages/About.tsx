@@ -6,10 +6,25 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 const techStack = [
-  { category: "Frontend", items: ["React 19", "TypeScript", "Tailwind CSS v4", "shadcn/ui", "Framer Motion"] },
-  { category: "Backend", items: ["Node.js", "Express 5", "TypeScript", "ESM Modules"] },
+  {
+    category: "Frontend",
+    items: [
+      "React 19",
+      "TypeScript",
+      "Tailwind CSS v4",
+      "shadcn/ui",
+      "Framer Motion",
+    ],
+  },
+  {
+    category: "Backend",
+    items: ["Node.js", "Express 5", "TypeScript", "ESM Modules"],
+  },
   { category: "Database", items: ["MongoDB Atlas", "Mongoose"] },
-  { category: "AI & Embeddings", items: ["Groq (Llama 3.3 70B)", "all-MiniLM-L6-v2", "@xenova/transformers"] },
+  {
+    category: "AI & Embeddings",
+    items: ["Groq (Llama 3.3 70B)", "all-MiniLM-L6-v2", "@xenova/transformers"],
+  },
   { category: "Auth & APIs", items: ["Clerk", "Octokit", "GitHub REST API"] },
 ];
 
@@ -43,6 +58,16 @@ const features = [
     icon: "⭐",
     title: "Saved Repositories",
     desc: "Bookmark repos you care about for quick re-analysis from your profile page. Remove them anytime.",
+  },
+  {
+    icon: "💊",
+    title: "Repo Health Score",
+    desc: "A 0–100 score calculated from duplicate ratio, issue volume, and cluster severity — giving maintainers an instant read on how healthy their issue tracker is.",
+  },
+  {
+    icon: "📊",
+    title: "Analysis Diff",
+    desc: "Refresh any analysis to see exactly what changed since last time — new clusters, resolved duplicates, issues opened or closed, and trend direction.",
   },
 ];
 
@@ -97,9 +122,9 @@ export default function About() {
             </h1>
 
             <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
-              FuseMeld was built to solve a real problem — open source maintainers
-              spending hours manually identifying duplicate issues across repos with
-              hundreds or thousands of open items.
+              FuseMeld was built to solve a real problem — open source
+              maintainers spending hours manually identifying duplicate issues
+              across repos with hundreds or thousands of open items.
             </p>
           </motion.div>
         </section>
@@ -305,7 +330,9 @@ export default function About() {
             className="rounded-xl border border-border bg-card p-8 flex flex-col sm:flex-row items-start sm:items-center gap-6"
           >
             <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shrink-0">
-              <span className="text-primary-foreground text-xl font-bold">P</span>
+              <span className="text-primary-foreground text-xl font-bold">
+                P
+              </span>
             </div>
 
             <div className="flex-1">
@@ -313,8 +340,9 @@ export default function About() {
                 Pabitra Maity
               </h2>
               <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-                Full-stack developer specializing in the MERN stack and TypeScript.
-                Built FuseMeld as an open-source tool for the developer community.
+                Full-stack developer specializing in the MERN stack and
+                TypeScript. Built FuseMeld as an open-source tool for the
+                developer community.
               </p>
               <div className="flex flex-wrap gap-2">
                 <a
@@ -353,7 +381,8 @@ export default function About() {
               Ready to clean up your issues?
             </h2>
             <p className="text-muted-foreground text-sm mb-6">
-              Paste any public GitHub repo and see the results in under a minute.
+              Paste any public GitHub repo and see the results in under a
+              minute.
             </p>
             <Link
               to="/"
