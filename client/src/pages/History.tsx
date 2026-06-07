@@ -184,7 +184,7 @@ export default function History() {
                           `/dashboard?repo=${encodeURIComponent(`${entry.owner}/${entry.repo}`)}`
                         )
                       }
-                      className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-border bg-card hover:bg-accent/40 transition-colors text-left group"
+                      className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-border bg-card hover:bg-accent/40 transition-colors text-left group cursor-pointer"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         {/* Cluster indicator */}
