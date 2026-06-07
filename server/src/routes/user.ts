@@ -2,6 +2,7 @@ import { Router, type Request, type Response } from "express";
 import { requireAuth, type AuthenticatedRequest } from "../middleware/auth.js";
 import { User, type IUser } from "../models/User.js";
 import type { Types } from "mongoose";
+import { History } from "../models/History.js";
 
 const router = Router();
 
@@ -61,6 +62,38 @@ router.get("/me", requireAuth, async (req: Request, res: Response): Promise<void
     res.json({ user });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to fetch user";
+    res.status(500).json({ error: message });
+  }
+});
+
+// Get user analysis history
+router.get("/history", requireAuth, async (req: Request, res: Response): Promise<void> => {
+  const userId = getUserId(req);
+  if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
+
+  try {
+    const history = await History.find({ userId })
+      .sort({ analyzedAt: -1 })
+      .limit(50)
+      .lean();
+
+    res.json({ history });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to fetch history";
+    res.status(500).json({ error: message });
+  }
+});
+
+// Clear history
+router.delete("/history", requireAuth, async (req: Request, res: Response): Promise<void> => {
+  const userId = getUserId(req);
+  if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
+
+  try {
+    await History.deleteMany({ userId });
+    res.json({ message: "History cleared" });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to clear history";
     res.status(500).json({ error: message });
   }
 });
