@@ -8,6 +8,7 @@ import {
 import { embedMany, prepareIssueText } from "../services/embeddings.js";
 import { findSimilarPairs, buildClusters } from "../services/similarity.js";
 import { generateMergeSuggestion } from "../services/groq.js";
+import { calculateHealthScore } from "../services/healthScore.js";
 import { Analysis } from "../models/Analysis.js";
 import { History } from "../models/History.js";
 
@@ -22,11 +23,9 @@ router.get(
     const userId = (req as AuthenticatedRequest).userId;
 
     if (!repoInput || typeof repoInput !== "string") {
-      res
-        .status(400)
-        .json({
-          error: "repo query param is required. e.g. ?repo=facebook/react",
-        });
+      res.status(400).json({
+        error: "repo query param is required. e.g. ?repo=facebook/react",
+      });
       return;
     }
 
@@ -43,6 +42,20 @@ router.get(
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
 
         if (cached && cached.cachedAt > oneHourAgo) {
+          if (userId) {
+            await saveToHistory({
+              userId,
+              owner,
+              repo,
+              totalIssues: cached.totalIssues,
+              clustersFound: cached.clusters.length,
+            });
+          }
+          // Recalculate health score from cached data
+          const health = calculateHealthScore(
+            cached.totalIssues,
+            cached.clusters,
+          );
           res.json({
             source: "cache",
             owner,
@@ -50,6 +63,7 @@ router.get(
             totalIssues: cached.totalIssues,
             clusters: cached.clusters,
             commitStory: cached.commitStory,
+            health,
           });
           return;
         }
@@ -79,6 +93,7 @@ router.get(
             clustersFound: 0,
           });
         }
+        const health = calculateHealthScore(0, []);
 
         res.json({
           source: "live",
@@ -89,6 +104,7 @@ router.get(
           totalIssues: 0,
           clusters: [],
           commitStory: [],
+          health,
           message: "No open issues found in this repo.",
         });
         return;
@@ -119,6 +135,10 @@ router.get(
         }),
       );
 
+      // Calculate health score
+      const health = calculateHealthScore(issues.length, clusters);
+      console.log(`Health score: ${health.score} — ${health.label}`);
+
       // Save to MongoDB
       await Analysis.findOneAndUpdate(
         { owner, repo },
@@ -134,6 +154,16 @@ router.get(
         { upsert: true, new: true },
       );
 
+      if (userId) {
+        await saveToHistory({
+          userId,
+          owner,
+          repo,
+          totalIssues: issues.length,
+          clustersFound: clusters.length,
+        });
+      }
+
       res.json({
         source: "live",
         owner,
@@ -142,6 +172,7 @@ router.get(
         description,
         totalIssues: issues.length,
         clusters,
+        health,
       });
     } catch (error) {
       const message =
