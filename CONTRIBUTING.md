@@ -4,6 +4,10 @@ Thank you for your interest in contributing! FuseMeld is an open-source project 
 
 ---
 
+### For a full breakdown of the system design, request flows, and technical decisions, see [ARCHITECTURE.md](../ARCHITECTURE.md).
+
+---
+
 ## 📋 Table of Contents
 
 - [Code of Conduct](#code-of-conduct)
