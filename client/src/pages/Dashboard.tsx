@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import RepoStats from "@/components/RepoStats";
 import DuplicateCluster from "@/components/DuplicateCluster";
 import HealthScoreCard from "@/components/HealthScore";
+import AnalysisDiffCard from "@/components/AnalysisDiff";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -21,7 +22,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
-
 
   // useCallback so useEffect dependency is stable
   const fetchAnalysis = useCallback(
@@ -158,6 +158,9 @@ export default function Dashboard() {
           >
             {/* Health score sits at the top */}
             {data.health && <HealthScoreCard health={data.health} />}
+
+            {/* Diff - only shown after a refresh */}
+            {data.diff && <AnalysisDiffCard diff={data.diff} />}
 
             <RepoStats data={data} />
 
