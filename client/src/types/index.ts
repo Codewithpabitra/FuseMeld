@@ -29,6 +29,7 @@ export interface AnalysisResult {
   description?: string | null;
   totalIssues: number;
   clusters: DuplicateCluster[];
+  health?: HealthScore;
 }
 
 export interface StoryResult {
@@ -64,4 +65,16 @@ export interface HistoryEntry {
   totalIssues: number;
   clustersFound: number;
   analyzedAt: string;
+}
+
+// repo health score 
+export interface HealthScore {
+  score: number;
+  label: "Excellent" | "Good" | "Needs Attention" | "Critical";
+  breakdown: {
+    duplicateRatio: number;
+    issueVolume: number;
+    clusterSeverity: number;
+  };
+  summary: string;
 }

@@ -7,6 +7,7 @@ import type { AnalysisResult } from "@/types/index";
 import Navbar from "@/components/Navbar";
 import RepoStats from "@/components/RepoStats";
 import DuplicateCluster from "@/components/DuplicateCluster";
+import HealthScoreCard from "@/components/HealthScore";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -21,32 +22,39 @@ export default function Dashboard() {
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
 
+
   // useCallback so useEffect dependency is stable
   const fetchAnalysis = useCallback(
-  async (refresh = false) => {
-    setLoading(true);
-    setError("");
-    try {
-      const token = await getToken();
-      if (token) setAuthToken(token);
-      const result = await analyzeRepo(repo, refresh);
-      setData(result);
-    } catch (err) {
-      // Extract backend error message if available
-      const axiosError = err as { response?: { data?: { error?: string }; status?: number } };
-      if (axiosError.response?.data?.error) {
-        setError(axiosError.response.data.error);
-      } else if (axiosError.response?.status === 404) {
-        setError(`"${repo}" does not exist on GitHub or is a private repository.`);
-      } else {
-        setError(err instanceof Error ? err.message : "Failed to analyze repo.");
+    async (refresh = false) => {
+      setLoading(true);
+      setError("");
+      try {
+        const token = await getToken();
+        if (token) setAuthToken(token);
+        const result = await analyzeRepo(repo, refresh);
+        setData(result);
+      } catch (err) {
+        // Extract backend error message if available
+        const axiosError = err as {
+          response?: { data?: { error?: string }; status?: number };
+        };
+        if (axiosError.response?.data?.error) {
+          setError(axiosError.response.data.error);
+        } else if (axiosError.response?.status === 404) {
+          setError(
+            `"${repo}" does not exist on GitHub or is a private repository.`,
+          );
+        } else {
+          setError(
+            err instanceof Error ? err.message : "Failed to analyze repo.",
+          );
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  },
-  [repo, getToken]
-);
+    },
+    [repo, getToken],
+  );
 
   useEffect(() => {
     if (!repo) {
@@ -148,6 +156,9 @@ export default function Dashboard() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4 }}
           >
+            {/* Health score sits at the top */}
+            {data.health && <HealthScoreCard health={data.health} />}
+
             <RepoStats data={data} />
 
             {data.clusters.length === 0 ? (
