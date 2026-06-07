@@ -7,6 +7,7 @@ import issuesRouter from "./routes/issues.js";
 import commitsRouter from "./routes/commits.js";
 import userRouter from "./routes/user.js";
 import { embedText } from "./services/embeddings.js";
+import publicRouter from "./routes/public.js"
 
 dotenv.config();
 
@@ -29,7 +30,10 @@ app.use("/health", (req: Request, res: Response) => {
     })
 });
 
-// Routes
+// Public Routes
+app.use("/api/public", publicRouter);
+
+// Protected Routes
 app.use("/api/issues", issuesRouter);
 app.use("/api/commits", commitsRouter);
 app.use("/api/user", userRouter);
