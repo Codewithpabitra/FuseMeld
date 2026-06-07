@@ -5,6 +5,8 @@ import { embedMany, prepareIssueText } from "../services/embeddings.js";
 import { findSimilarPairs, buildClusters } from "../services/similarity.js";
 import { generateMergeSuggestion } from "../services/groq.js";
 import { Analysis } from "../models/Analysis.js";
+import { History } from "../models/History.js"
+
 
 const router = Router();
 
@@ -118,5 +120,46 @@ router.get("/analyze", requireAuth, async (req: Request, res: Response): Promise
     res.status(500).json({ error: message });
   }
 });
+
+// Helper - saves a history entry, deduplicates within 1 hour
+const saveToHistory = async ({
+  userId,
+  owner,
+  repo,
+  totalIssues,
+  clustersFound,
+}: {
+  userId: string;
+  owner: string;
+  repo: string;
+  totalIssues: number;
+  clustersFound: number;
+}) => {
+  try {
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+
+    // Don't save if already saved this repo in the last hour
+    const recent = await History.findOne({
+      userId,
+      owner,
+      repo,
+      analyzedAt: { $gte: oneHourAgo },
+    });
+
+    if (recent) return;
+
+    await History.create({
+      userId,
+      owner,
+      repo,
+      repoUrl: `https://github.com/${owner}/${repo}`,
+      totalIssues,
+      clustersFound,
+      analyzedAt: new Date(),
+    });
+  } catch {
+    // Non-critical - don't let history saving break the main response
+  }
+};
 
 export default router;
