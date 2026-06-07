@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard.js";
 import Story from "./pages/Story.js";
 import Profile from "./pages/Profile.js";
 import History from "./pages/History.js";
+import About from "./pages/About.js";
 
 // Wraps routes that require login
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -60,6 +61,7 @@ export default function App() {
       <Routes>
         {/* Public */}
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
         <Route
           path="/sign-in"
           element={
