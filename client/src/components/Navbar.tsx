@@ -35,6 +35,12 @@ export default function Navbar() {
               >
                 Dashboard
               </Link>
+              <Link
+                to="/profile"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Profile
+              </Link>
               <UserButton afterSignOutUrl="/" />
             </>
           ) : (
@@ -43,11 +49,10 @@ export default function Navbar() {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate("/sign-in")}
-                className="cursor-pointer"
               >
                 Sign in
               </Button>
-              <Button size="sm" onClick={() => navigate("/sign-up")} className="cursor-pointer">
+              <Button size="sm" onClick={() => navigate("/sign-up")}>
                 Get started
               </Button>
             </>

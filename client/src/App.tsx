@@ -5,6 +5,7 @@ import { setAuthToken, syncUser } from "./lib/api.js";
 import Home from "./pages/Home.js";
 import Dashboard from "./pages/Dashboard.js";
 import Story from "./pages/Story.js";
+import Profile from "./pages/Profile.js";
 
 // Wraps routes that require login
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -42,7 +43,7 @@ export default function App() {
               username: user.username ?? user.firstName ?? "user",
             });
           } catch {
-            // User already exists — that's fine
+            // User already exists - that's fine
           }
         }
       } else {
@@ -89,6 +90,15 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Story />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />
