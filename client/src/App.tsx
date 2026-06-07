@@ -62,7 +62,7 @@ export default function App() {
           path="/sign-in"
           element={
             <div className="min-h-screen flex items-center justify-center bg-slate-950">
-              <SignIn routing="path" path="/sign-in" afterSignInUrl="/dashboard" />
+              <SignIn routing="path" path="/sign-in" afterSignInUrl="/" />
             </div>
           }
         />
@@ -70,7 +70,7 @@ export default function App() {
           path="/sign-up"
           element={
             <div className="min-h-screen flex items-center justify-center bg-slate-950">
-              <SignUp routing="path" path="/sign-up" afterSignUpUrl="/dashboard" />
+              <SignUp routing="path" path="/sign-up" afterSignUpUrl="/" />
             </div>
           }
         />
